@@ -1,5 +1,12 @@
 from django.urls import path, re_path
 
+from web.views.friend.get_list import GetListFriendView
+from web.views.friend.remove import RemoveFriendView
+from web.views.friend.get_or_create import GetOrCreateFriendView
+
+from web.views.hompage.index import HomepageIndexView
+from web.views.create.character.get_list import GetListCharacterView
+
 from web.views.create.character.create import CreateCharacterView
 from web.views.create.character.get_single import GetSingleCharacterView
 from web.views.create.character.remove import RemoveCharacterView
@@ -12,6 +19,7 @@ from web.views.user.account.logout import LogoutView
 from web.views.user.account.refresh_token import RefreshTokenView
 from web.views.user.account.register import RegisterView
 from web.views.user.account.login import LoginView
+
 
 from web.views.index import index
 
@@ -28,6 +36,14 @@ urlpatterns = [
     path('api/create/character/get_single/', GetSingleCharacterView.as_view()),
     path('api/create/character/update/', UpdateCharacterView.as_view()),
     path('api/create/character/remove/', RemoveCharacterView.as_view()),
+
+    path('api/create/character/get_list/', GetListCharacterView.as_view()),
+
+    path('api/homepage/index/',HomepageIndexView.as_view()),
+
+    path('api/friend/get_or_create/',GetOrCreateFriendView.as_view()),
+    path('api/friend/get_list/',GetListFriendView.as_view()),
+    path('api/friend/remove/',RemoveFriendView.as_view()),
 
     path('', index),
 

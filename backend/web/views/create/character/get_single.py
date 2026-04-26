@@ -23,5 +23,5 @@ class GetSingleCharacterView(APIView):
             })
         except:
             return Response({
-                'result': '系统异常，请稍后重试'
+                'reuslt': '系统异常，请稍后重试'
             })
