@@ -26,7 +26,7 @@ async function loadMore() {
 
   let newCharacters = []
   try {
-    console.log( characters.value.length)
+
     const res = await api.get('/api/create/character/get_list/', {
       params: {
         items_count: characters.value.length,
@@ -35,7 +35,7 @@ async function loadMore() {
     })
     const data = res.data
     if (data.result === 'success') {
-      console.log(data)
+
       userProfile.value = data.user_profile
       newCharacters = data.characters
     }
@@ -81,7 +81,7 @@ onBeforeUnmount(() => {
 })
 
 function reset(){
-  console.log('reset')
+
   userProfile.value = null
   characters.value =[]
   isLoading.value = false
@@ -91,7 +91,6 @@ function reset(){
 
 watch(()=> route.params.user_id,()=>{
   reset()
-  console.log('watch user_id change')
 })
 
 </script>

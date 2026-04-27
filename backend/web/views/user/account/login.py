@@ -17,13 +17,11 @@ class LoginView(APIView):
                 })
             user = authenticate(username=username, password=password)
             if user:  # 用户名密码正确
-                print("login")
-                print(username)
-                print(password)
+
                 user_profile = UserProfile.objects.get(user=user)
-                print(user_profile)
+
                 refresh = RefreshToken.for_user(user)  # 生成jwt
-                print(refresh)
+
                 response = Response({
                     'result': 'success',
                     'access': str(refresh.access_token),

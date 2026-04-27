@@ -40,7 +40,7 @@ async function handleRemoveFriend() {
 }
 
 async function openChatField() {
-  console.log('open')
+
   if (!user.isLogin()){
     await  router.push({name:'user-account-login-index'})
   }else{
@@ -49,7 +49,7 @@ async function openChatField() {
            character_id:props.character.id
        })
       const data=res.data
-      console.log(data)
+
       if(data.result==='success'){
         friend.value=res.data.friend
         chatFieldRef.value.showModal()

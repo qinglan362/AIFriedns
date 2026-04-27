@@ -42,7 +42,7 @@ def  add_recent_messages(state, friend):
 
     message_raw.reverse()
 
-    print(message_raw)
+
 
     messages = []
 

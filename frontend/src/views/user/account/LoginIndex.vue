@@ -24,7 +24,7 @@ async function handleLogin() {
         password: password.value,
       })
       const data = res.data
-      console.log(data)
+
       if (data.result === 'success') {
         user.setAccessToken(data.access)
         user.setUserInfo(data)
