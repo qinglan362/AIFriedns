@@ -1,28 +1,90 @@
 <script setup>
 import SendIcon from "@/components/character/icons/SendIcon.vue";
 import MicIcon from "@/components/character/icons/MicIcon.vue";
+import {ref, useTemplateRef} from "vue";
+import streamApi from "@/js/http/streamApi.js";
+
+const inputRef = useTemplateRef('input-ref')
+
+const props = defineProps(['friendId'])
+
+const emit= defineEmits(['pushBackMessage','addToLastMessage'])
+
+const message=ref('')
+
+let isProcessing=false
+
+function focus() {
+  inputRef.value.focus()
+}
+
+async function handleSend() {
+  if(isProcessing) return
+
+  isProcessing=true
+
+  const content=message.value.trim()
+  if(!content) return
+
+  message.value=''
+
+  emit('pushBackMessage',{
+    role :'user',
+    content : content,
+    id : crypto.randomUUID()
+  })
+
+  emit('pushBackMessage',{
+    role :'ai',
+    content : '',
+    id : crypto.randomUUID()
+  })
+
+  try{
+    await streamApi('/api/friend/message/chat/',{
+      body:{
+        friend_id:props.friendId,
+        message:content,
+      },
+      onmessage(data , isDone){
+         if(isDone){
+            isProcessing=false
+         }else if(data.content){
+           emit('addToLastMessage',data.content)
+         }
+      },
+      onerror(err){
+        isProcessing = false
+        console.error('Error:', err)
+      },
+    })
+  }catch (e){
+    console.log(e)
+  }
+}
+
+defineExpose({
+  focus,
+})
+
 </script>
 
 <template>
-  <div class="absolute bottom-4 left-2 h-12 w-86 flex items-center">
+  <form @submit.prevent="handleSend" class="absolute bottom-4 left-2 h-12 w-86 flex items-center">
     <input
-        class="input
-        bg-black/30
-        text-white
-          text-base
-          w-full
-          h-full
-          rounded-2xl
-          pr-20"
-          placeholder="文本输入..."
-          type="text">
-    <div class="absolute right-2 w-8 h-8 flex justify-center items-center  cursor-pointer">
-      <SendIcon/>
+        ref="input-ref"
+        v-model="message"
+        class="input bg-black/30 backdrop-blur-sm text-white text-base w-full h-full rounded-2xl pr-20"
+        type="text"
+        placeholder="文本输入..."
+    >
+    <div @click="handleSend" class="absolute right-2 w-8 h-8 flex justify-center items-center cursor-pointer">
+      <SendIcon />
     </div>
-    <div class="absolute right-10 w-8 h-8 flex justify-center items-center  cursor-pointer">
-      <MicIcon/>
+    <div class="absolute right-10 w-8 h-8 flex justify-center items-center cursor-pointer">
+      <MicIcon />
     </div>
-  </div>
+  </form>
 </template>
 
 <style scoped>
