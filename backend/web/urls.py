@@ -1,5 +1,6 @@
 from django.urls import path, re_path
 
+from web.views.friend.message.asr.asr import ASRView
 from web.views.friend.message.get_history import GetHistoryView
 from web.views.friend.message.chat.chat import MessageChatView
 from web.views.friend.get_list import GetListFriendView
@@ -50,6 +51,8 @@ urlpatterns = [
     path('api/friend/message/chat/',MessageChatView.as_view()),
 
     path('api/friend/message/get_history/',GetHistoryView.as_view()),
+
+    path('api/friend/message/asr/asr/',ASRView.as_view()),
 
     path('', index),
 

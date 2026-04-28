@@ -17,6 +17,18 @@ class RegisterView(APIView):
                 return Response({
                     'result': '用户名和密码不能为空'
                 })
+            if any(char.isspace() for char in username):
+                   return Response({
+                    'result': '用户名不能包含空格'
+                   })
+            if len(username) < 3:
+                return Response({
+                    'result': '用户名长度不能小于3位'
+                })
+            if len(password) < 6:
+                return Response({
+                    'result': '密码长度不能小于6位'
+                })
             if User.objects.filter(username=username).exists():
                 return Response({
                     'result': '用户名已存在'
@@ -29,7 +41,7 @@ class RegisterView(APIView):
                 'access': str(refresh.access_token),
                 'user_id': user.id,
                 'username': user.username,
-                'photo': user_profile.photo.url,  # 必须加url！！！
+                'photo': user_profile.photo.url,
                 'profile': user_profile.profile,
             })
             response.set_cookie(

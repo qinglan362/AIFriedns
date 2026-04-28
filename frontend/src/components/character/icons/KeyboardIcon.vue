@@ -27,7 +27,6 @@
 
     <line x1="7" y1="16" x2="17" y2="16" />
   </svg>
-
 </template>
 
 <style scoped>

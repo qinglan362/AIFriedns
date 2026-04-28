@@ -15,7 +15,7 @@ defineExpose({
 
 <template>
   <fieldset class="fieldset">
-    <label class="label text-base">角色介绍</label>
+    <label class="label text-base">角色介绍(此介绍也作为模型提示词)</label>
     <textarea v-model="myProfile" rows="6" class="textarea w-108"></textarea>
   </fieldset>
 </template>

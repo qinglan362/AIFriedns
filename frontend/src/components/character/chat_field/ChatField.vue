@@ -4,13 +4,11 @@ import InputField from "@/components/character/chat_field/input_field/InputField
 import CharacterPhotoField from "@/components/character/chat_field/character_photo_field/CharacterPhotoField.vue";
 import ChatHistory from "@/components/character/chat_field/chat_history/ChatHistory.vue";
 
-
 const props = defineProps(['friend'])
 const modalRef = useTemplateRef('modal-ref')
 const inputRef = useTemplateRef('input-ref')
 const chatHistoryRef = useTemplateRef('chat-history-ref')
 const history = ref([])
-
 
 async function showModal() {
   modalRef.value.showModal()
@@ -45,17 +43,21 @@ function handleAddToLastMessage(delta) {
 function handlePushFrontMessage(msg) {
   history.value.unshift(msg)
 }
+
+function handleClose() {
+  modalRef.value.close()
+  inputRef.value.close()
+}
+
 defineExpose({
   showModal,
 })
-
-
 </script>
 
 <template>
   <dialog ref="modal-ref" class="modal">
     <div class="modal-box w-90 h-150" :style="modalStyle">
-      <button @click="modalRef.close()" class="btn btn-sm btn-circle btn-ghost bg-transparent absolute right-1 top-1">✕</button>
+      <button @click="handleClose" class="btn btn-sm btn-circle btn-ghost bg-transparent absolute right-1 top-1">✕</button>
       <ChatHistory
           ref="chat-history-ref"
           v-if="friend"
@@ -75,7 +77,6 @@ defineExpose({
     </div>
   </dialog>
 </template>
-
 
 <style scoped>
 
