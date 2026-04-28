@@ -11,6 +11,7 @@ class GetSingleCharacterView(APIView):
         try:
             character_id = request.query_params.get('character_id')
             character = Character.objects.get(id=character_id, author__user=request.user)
+            print(character.model)
             return Response({
                 'result': 'success',
                 'character': {
@@ -19,6 +20,7 @@ class GetSingleCharacterView(APIView):
                     'profile': character.profile,
                     'photo': character.photo.url,
                     'background_image': character.background_image.url,
+                    'model' : character.model
                 }
             })
         except:

@@ -8,6 +8,7 @@ import {base64ToFile} from "@/js/utils/base64_to_file.js";
 import api from "@/js/http/api.js";
 import {useRoute, useRouter} from "vue-router";
 import {useUserStore} from "@/stores/user.js";
+import ModelChoose from "@/views/create/character/components/ModelChoose.vue";
 
 const user = useUserStore()
 const router = useRouter()
@@ -34,6 +35,8 @@ const photoRef = useTemplateRef('photo-ref')
 const nameRef = useTemplateRef('name-ref')
 const profileRef = useTemplateRef('profile-ref')
 const backgroundImageRef = useTemplateRef('background-image-ref')
+const modelRef = useTemplateRef('model-ref')
+
 const errorMessage = ref('')
 
 async function handleUpdate() {
@@ -41,6 +44,8 @@ async function handleUpdate() {
   const name = nameRef.value.myName?.trim()
   const profile = profileRef.value.myProfile?.trim()
   const backgroundImage = backgroundImageRef.value.myBackgroundImage
+  const model = modelRef.value.myModel
+
 
   errorMessage.value = ''
   if (!photo) {
@@ -64,6 +69,8 @@ async function handleUpdate() {
     if (backgroundImage !== character.value.background_image) {
       formData.append('background_image', base64ToFile(backgroundImage, 'background_image.png'))
     }
+
+    formData.append('model', model)
 
     try {
       const res = await api.post('/api/create/character/update/', formData)
@@ -92,7 +99,12 @@ async function handleUpdate() {
         <Photo ref="photo-ref" :photo="character.photo" />
         <Name ref="name-ref" :name="character.name" />
         <Profile ref="profile-ref" :profile="character.profile" />
-        <BackgroundImage ref="background-image-ref" :backgroundImage="character.background_image" />
+
+        <div class="flex items-center gap-20 my-4">
+          <BackgroundImage ref="background-image-ref" :backgroundImage="character.background_image" />
+          <ModelChoose ref="model-ref" :model="character.model"  class="w-120"/>
+        </div>
+
 
         <p v-if="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
 

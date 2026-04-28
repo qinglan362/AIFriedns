@@ -64,7 +64,7 @@ class MessageChatView(APIView):
                 'result': '好友不存在'
             })
         friend = friends.first()
-        app = ChatGraph.create_app()
+        app = ChatGraph.create_app(friend.character.model)
 
         inputs = {
             'messages': [HumanMessage(message)]

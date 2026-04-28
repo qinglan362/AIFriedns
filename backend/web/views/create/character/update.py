@@ -13,6 +13,7 @@ class UpdateCharacterView(APIView):
         try:
             character_id = request.data['character_id']
             character = Character.objects.get(id=character_id, author__user=request.user)
+            model = request.data['model'].strip()
             name = request.data['name'].strip()
             profile = request.data['profile'].strip()[:100000]
             photo = request.FILES.get('photo', None)
@@ -34,6 +35,9 @@ class UpdateCharacterView(APIView):
                 character.background_image = background_image
             character.name = name
             character.profile = profile
+
+            character.model = model
+
             character.update_time = now()
             character.save()
             return Response({

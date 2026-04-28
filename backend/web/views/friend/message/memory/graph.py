@@ -8,9 +8,9 @@ from langgraph.graph import add_messages, StateGraph
 
 class MemoryGraph:
     @staticmethod
-    def create_app():
+    def create_app(modelName):
         llm = ChatOpenAI(
-            model='deepseek-v4-flash',
+            model=modelName,
             openai_api_key=os.getenv('API_KEY'),
             openai_api_base=os.getenv('API_BASE'),
         )

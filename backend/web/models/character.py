@@ -24,6 +24,7 @@ class Character(models.Model):
     photo = models.ImageField(upload_to=photo_upload_to)
     profile = models.TextField(max_length=100000)
     background_image = models.ImageField(upload_to=background_image_upload_to)
+    model = models.CharField(max_length=500, default='deepseek-v4-flash')
     create_time = models.DateTimeField(default=now)
     update_time = models.DateTimeField(default=now)
 

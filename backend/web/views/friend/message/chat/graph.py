@@ -17,30 +17,32 @@ from web.documents.utils.custom_embeddings import CustomEmbeddings
 
 class ChatGraph:
     @staticmethod
-    def create_app():
+    def create_app(modelName):
         @tool
         def get_time() -> str:
            """当需要查询精确时间时,可以调用这个工具函数 返回格式 [年-月-日 时:分:秒]"""
            return localtime(now()).strftime('%Y-%m-%d %H:%M:%S')
 
-        @tool
-        def search_knowledge_base(query: str) -> str:
-            """当用户需要查询阿里云百炼平台相关的知识时,调用这个工具函数。输入为要查询的问题，输出为查询结果"""
-            db = lancedb.connect('./web/documents/lancedb_storage')
-            embeddings = CustomEmbeddings()
-            vector_db = LanceDB(
-                connection=db,
-                embedding=embeddings,
-                table_name='my_knowledge_base',
-            )
-            docs = vector_db.similarity_search(query, k=3)
-            context = '\n\n'.join([f'内容片段：{i+1}\n{doc.page_content}'for i ,doc in enumerate(docs)])
-            return f'这是从知识库中的查询结果：\n\n{context}\n'
+        # @tool
+        # def search_knowledge_base(query: str) -> str:
+        #     """当用户需要查询阿里云百炼平台相关的知识时,调用这个工具函数。输入为要查询的问题，输出为查询结果"""
+        #     db = lancedb.connect('./web/documents/lancedb_storage')
+        #     embeddings = CustomEmbeddings()
+        #     vector_db = LanceDB(
+        #         connection=db,
+        #         embedding=embeddings,
+        #         table_name='my_knowledge_base',
+        #     )
+        #     docs = vector_db.similarity_search(query, k=3)
+        #     context = '\n\n'.join([f'内容片段：{i+1}\n{doc.page_content}'for i ,doc in enumerate(docs)])
+        #     return f'这是从知识库中的查询结果：\n\n{context}\n'
+        #  search_knowledge_base 加到下面
+        tools = [get_time]
 
-        tools = [get_time,search_knowledge_base]
+        print(modelName)
 
         llm = ChatOpenAI(
-            model='deepseek-v4-flash',
+            model=modelName,
             openai_api_key=os.getenv('API_KEY'),
             openai_api_base=os.getenv('API_BASE'),
             streaming=True,

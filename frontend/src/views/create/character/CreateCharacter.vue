@@ -8,6 +8,7 @@ import {base64ToFile} from "@/js/utils/base64_to_file.js";
 import api from "@/js/http/api.js";
 import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/user.js";
+import ModelChoose from "@/views/create/character/components/ModelChoose.vue";
 
 const user = useUserStore()
 const router = useRouter()
@@ -16,6 +17,9 @@ const photoRef = useTemplateRef('photo-ref')
 const nameRef = useTemplateRef('name-ref')
 const profileRef = useTemplateRef('profile-ref')
 const backgroundImageRef = useTemplateRef('background-image-ref')
+
+const modelRef = useTemplateRef('model-ref')
+
 const errorMessage = ref('')
 
 async function handleCreate() {
@@ -23,6 +27,9 @@ async function handleCreate() {
   const name = nameRef.value.myName?.trim()
   const profile = profileRef.value.myProfile?.trim()
   const backgroundImage = backgroundImageRef.value.myBackgroundImage
+  const model = modelRef.value.myModel
+
+  console.log(model)
 
   errorMessage.value = ''
   if (!photo) {
@@ -33,12 +40,15 @@ async function handleCreate() {
     errorMessage.value = '角色介绍不能为空'
   } else if (!backgroundImage) {
     errorMessage.value = '聊天背景不能为空'
+  } else if(!model) {
+    errorMessage.value = '请选择模型'
   } else {
     const formData = new FormData()
     formData.append('name', name)
     formData.append('profile', profile)
     formData.append('photo', base64ToFile(photo, 'photo.png'))
     formData.append('background_image', base64ToFile(backgroundImage, 'background_image.png'))
+    formData.append('model', model)
 
     try {
       const res = await api.post('/api/create/character/create/', formData)
@@ -67,7 +77,10 @@ async function handleCreate() {
         <Photo ref="photo-ref" />
         <Name ref="name-ref" />
         <Profile ref="profile-ref" />
-        <BackgroundImage ref="background-image-ref" />
+        <div class="flex items-center gap-20 my-4">
+          <BackgroundImage ref="background-image-ref" />
+          <ModelChoose ref="model-ref" class="w-120"/>
+        </div>
 
         <p v-if="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
 

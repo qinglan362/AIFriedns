@@ -17,6 +17,8 @@ class CreateCharacterView(APIView):
             photo = request.FILES.get('photo', None)
             background_image = request.FILES.get('background_image', None)
 
+            model = request.data.get('model').strip()
+
             if not name:
                 return Response({
                     'result': '名字不能为空'
@@ -40,6 +42,7 @@ class CreateCharacterView(APIView):
                 profile=profile,
                 photo=photo,
                 background_image=background_image,
+                model=model,
             )
             return Response({
                 'result': 'success',
