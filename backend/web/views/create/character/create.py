@@ -1,16 +1,26 @@
+import os
+
+from langchain_text_splitters import character
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from web.models.knowledge import Knowledge
 from web.models.character import Character
 from web.models.user import UserProfile
-
+from web.documents.utils import insert_documents
 
 class CreateCharacterView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
         try:
             user = request.user
+
+            knowledgeFile = request.FILES.get('knowledgeFile', None)
+
+            fileName, ext = os.path.splitext(knowledgeFile.name)
+
+
             user_profile = UserProfile.objects.get(user=user)
             name = request.data.get('name').strip()
             profile = request.data.get('profile').strip()[:100000]
@@ -18,6 +28,7 @@ class CreateCharacterView(APIView):
             background_image = request.FILES.get('background_image', None)
 
             model = request.data.get('model').strip()
+
 
             if not name:
                 return Response({
@@ -36,7 +47,7 @@ class CreateCharacterView(APIView):
                     'result': '聊天背景不能为空'
                 })
 
-            Character.objects.create(
+            character = Character.objects.create(
                 author=user_profile,
                 name=name,
                 profile=profile,
@@ -44,10 +55,23 @@ class CreateCharacterView(APIView):
                 background_image=background_image,
                 model=model,
             )
+            print(character)
+
+
+            knowledge = Knowledge.objects.create(
+                character=character,
+                fileName=fileName,
+                fileType=ext,
+            )
+
+            insert_documents.insert_documents(knowledgeFile,knowledge.id,character.id)
+
             return Response({
                 'result': 'success',
             })
-        except:
+        except Exception as e:
+            import traceback
+            traceback.print_exc()  # 在终端打印完整错误
             return Response({
-                'result': '系统异常，请稍后重试'
-            })
+           'result': f'系统异常：{str(e)}'
+             })

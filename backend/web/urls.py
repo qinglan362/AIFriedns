@@ -1,5 +1,7 @@
 from django.urls import path, re_path
 
+from web.views.knowledge.deleteOneKnowledge import DeleteOneKnowledge
+from web.views.knowledge.getOneCharaterAllKnowledge import GetOneCharacterAllKnowledge
 from web.views.friend.message.asr.asr import ASRView
 from web.views.friend.message.get_history import GetHistoryView
 from web.views.friend.message.chat.chat import MessageChatView
@@ -53,6 +55,10 @@ urlpatterns = [
     path('api/friend/message/get_history/',GetHistoryView.as_view()),
 
     path('api/friend/message/asr/asr/',ASRView.as_view()),
+
+    path('api/knowledge/get_one_character_all/',GetOneCharacterAllKnowledge.as_view()),
+
+    path('api/knowledge/delete_one_knowledge/',DeleteOneKnowledge.as_view()),
 
     path('', index),
 

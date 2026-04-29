@@ -9,6 +9,8 @@ import api from "@/js/http/api.js";
 import {useRoute, useRouter} from "vue-router";
 import {useUserStore} from "@/stores/user.js";
 import ModelChoose from "@/views/create/character/components/ModelChoose.vue";
+import AddKnowledge from "@/views/create/character/components/AddKnowledge.vue";
+import ShowAllKnowledge from "@/views/create/character/components/ShowAllKnowledge.vue";
 
 const user = useUserStore()
 const router = useRouter()
@@ -36,6 +38,8 @@ const nameRef = useTemplateRef('name-ref')
 const profileRef = useTemplateRef('profile-ref')
 const backgroundImageRef = useTemplateRef('background-image-ref')
 const modelRef = useTemplateRef('model-ref')
+const knowledgeFileRef=useTemplateRef('knowledge-file-ref')
+
 
 const errorMessage = ref('')
 
@@ -45,6 +49,7 @@ async function handleUpdate() {
   const profile = profileRef.value.myProfile?.trim()
   const backgroundImage = backgroundImageRef.value.myBackgroundImage
   const model = modelRef.value.myModel
+  const knowledgeFile=knowledgeFileRef.value.selectedFile
 
 
   errorMessage.value = ''
@@ -61,6 +66,7 @@ async function handleUpdate() {
     formData.append('character_id', characterId)
     formData.append('name', name)
     formData.append('profile', profile)
+    formData.append('knowledgeFile',knowledgeFile)
 
     if (photo !== character.value.photo) {
       formData.append('photo', base64ToFile(photo, 'photo.png'))
@@ -89,6 +95,10 @@ async function handleUpdate() {
     }
   }
 }
+const handleManageAllKnowledge = useTemplateRef('handleManageAllKnowledge')
+function  show(){
+  handleManageAllKnowledge.value.showModal()
+}
 </script>
 
 <template>
@@ -100,9 +110,22 @@ async function handleUpdate() {
         <Name ref="name-ref" :name="character.name" />
         <Profile ref="profile-ref" :profile="character.profile" />
 
-        <div class="flex items-center gap-20 my-4">
+
+        <div class="flex items-center gap-15 my-4">
           <BackgroundImage ref="background-image-ref" :backgroundImage="character.background_image" />
-          <ModelChoose ref="model-ref" :model="character.model"  class="w-120"/>
+          <div>
+            <ModelChoose ref="model-ref" :model="character.model"  class="w-120"/>
+            <add-knowledge ref="knowledge-file-ref"/>
+            <button  class="btn btn-neutral w-80 mt-2" @click="show">管理知识库</button>
+            <dialog ref="handleManageAllKnowledge" class="modal">
+              <div class="modal-box">
+                <form method="dialog">
+                  <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <ShowAllKnowledge :characterId="characterId"/>
+              </div>
+            </dialog>
+          </div>
         </div>
 
 

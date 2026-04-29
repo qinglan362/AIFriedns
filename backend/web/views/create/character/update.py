@@ -1,8 +1,11 @@
+import os
+
 from django.utils.timezone import now
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
+from web.models.knowledge import Knowledge
 from web.models.character import Character
 from web.views.utils.photo import remove_old_photo
 
@@ -18,6 +21,11 @@ class UpdateCharacterView(APIView):
             profile = request.data['profile'].strip()[:100000]
             photo = request.FILES.get('photo', None)
             background_image = request.FILES.get('background_image', None)
+
+            knowledgeFile = request.FILES.get('knowledgeFile', None)
+            print(knowledgeFile)
+
+            fileName, ext = os.path.splitext(knowledgeFile.name)
 
             if not name:
                 return Response({
@@ -40,10 +48,22 @@ class UpdateCharacterView(APIView):
 
             character.update_time = now()
             character.save()
+
+            knowledge = Knowledge.objects.create(
+                character=character,
+                fileName=fileName,
+                fileType=ext,
+            )
+
+            from web.documents.utils import insert_documents
+            insert_documents.insert_documents(knowledgeFile,knowledge.id,character.id)
+
             return Response({
                 'result': 'success',
             })
-        except:
-            return Response({
-                'result': '系统异常，请稍后重试'
-            })
+        except Exception as e:
+              import traceback
+              traceback.print_exc()
+              return Response({
+                  'result':'系统异常'
+              })

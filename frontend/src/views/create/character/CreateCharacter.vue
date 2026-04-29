@@ -9,6 +9,7 @@ import api from "@/js/http/api.js";
 import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/user.js";
 import ModelChoose from "@/views/create/character/components/ModelChoose.vue";
+import AddKnowledge from "@/views/create/character/components/AddKnowledge.vue";
 
 const user = useUserStore()
 const router = useRouter()
@@ -17,8 +18,8 @@ const photoRef = useTemplateRef('photo-ref')
 const nameRef = useTemplateRef('name-ref')
 const profileRef = useTemplateRef('profile-ref')
 const backgroundImageRef = useTemplateRef('background-image-ref')
-
 const modelRef = useTemplateRef('model-ref')
+const knowledgeFileRef=useTemplateRef('knowledge-file-ref')
 
 const errorMessage = ref('')
 
@@ -28,8 +29,8 @@ async function handleCreate() {
   const profile = profileRef.value.myProfile?.trim()
   const backgroundImage = backgroundImageRef.value.myBackgroundImage
   const model = modelRef.value.myModel
+  const knowledgeFile=knowledgeFileRef.value.selectedFile
 
-  console.log(model)
 
   errorMessage.value = ''
   if (!photo) {
@@ -49,6 +50,7 @@ async function handleCreate() {
     formData.append('photo', base64ToFile(photo, 'photo.png'))
     formData.append('background_image', base64ToFile(backgroundImage, 'background_image.png'))
     formData.append('model', model)
+    formData.append('knowledgeFile',knowledgeFile)
 
     try {
       const res = await api.post('/api/create/character/create/', formData)
@@ -77,9 +79,12 @@ async function handleCreate() {
         <Photo ref="photo-ref" />
         <Name ref="name-ref" />
         <Profile ref="profile-ref" />
-        <div class="flex items-center gap-20 my-4">
+        <div class="flex items-center gap-15 my-4">
           <BackgroundImage ref="background-image-ref" />
-          <ModelChoose ref="model-ref" class="w-120"/>
+          <div>
+            <ModelChoose ref="model-ref" class="w-120"/>
+            <AddKnowledge ref="knowledge-file-ref"/>
+          </div>
         </div>
 
         <p v-if="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>

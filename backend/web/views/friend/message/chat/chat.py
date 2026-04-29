@@ -64,7 +64,7 @@ class MessageChatView(APIView):
                 'result': '好友不存在'
             })
         friend = friends.first()
-        app = ChatGraph.create_app(friend.character.model)
+        app = ChatGraph.create_app(friend.character.model,friend.character.id)
 
         inputs = {
             'messages': [HumanMessage(message)]
@@ -84,7 +84,20 @@ class MessageChatView(APIView):
     async def tts_sender(self, app, inputs, mq, ws, task_id):
         async for msg, metadata in app.astream(inputs, stream_mode="messages"):
             if isinstance(msg, BaseMessageChunk):
-                if msg.content:
+                    content = msg.content
+                    # 过滤掉工具调用返回的 list 类型
+                    if not isinstance(content, str):
+                        continue
+                        # 过滤空字符串
+                    if not content.strip():
+                         continue
+                         # ✅ 只发 agent 节点的输出，过滤掉 tools 节点
+                    if metadata.get('langgraph_node') != 'agent':
+                         continue
+
+                    content = content.encode('utf-8', errors='ignore').decode('utf-8')
+
+
                     await ws.send(json.dumps({
                         "header": {
                             "action": "continue-task",
@@ -93,13 +106,13 @@ class MessageChatView(APIView):
                         },
                         "payload": {
                             "input": {
-                                "text": msg.content,
+                                "text": content,
                             }
                         }
-                    }))
-                    mq.put_nowait({'content': msg.content})
-                if hasattr(msg, 'usage_metadata') and msg.usage_metadata:
-                    mq.put_nowait({'usage': msg.usage_metadata})
+                    }, ensure_ascii=False))
+                    mq.put_nowait({'content': content})
+                    if hasattr(msg, 'usage_metadata') and msg.usage_metadata:
+                       mq.put_nowait({'usage': msg.usage_metadata})
         await ws.send(json.dumps({
             "header": {
                 "action": "finish-task",
